@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Products</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .header-right { display: flex; gap: 15px; }
+        .header-right a {
+            color: white; text-decoration: none; padding: 8px 15px;
+            background: rgba(255,255,255,0.2); border-radius: 4px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .vendor-info {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .vendor-info h2 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .product-img {
+            background: #f0f0f0;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+        }
+        .product-info {
+            padding: 15px;
+        }
+        .product-name {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        .product-price {
+            font-size: 18px;
+            color: #27ae60;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .add-to-cart-section {
+            display: flex;
+            gap: 8px;
+        }
+        input[type="number"] {
+            width: 50px;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .btn-add {
+            flex: 1;
+            padding: 8px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-add:hover {
+            background: #229954;
+        }
+        .back-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            background: #666;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2><%= vendorName %> Products</h2>
+        <div class="header-right">
+            <a href="/user/vendors">Back to Vendors</a>
+            <a href="/user/cart">Cart</a>
+            <a href="/logout">LogOut</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/user/vendors" class="back-btn">← Back to Vendors</a>
+
+        <div class="vendor-info">
+            <h2><%= vendorName %></h2>
+            <p>Category: <strong><%= vendorCategory %></strong></p>
+            <p>Email: <%= vendorEmail %></p>
+        </div>
+
+        <h2 style="margin-bottom: 20px;">Available Products</h2>
+
+        <% if (products.length === 0) { %>
+            <div class="empty-state">
+                <h3>No Products Available</h3>
+                <p>This vendor currently has no products available.</p>
+            </div>
+        <% } else { %>
+            <div class="products-grid">
+                <% products.forEach(product => { %>
+                    <% if (product.status === 'Available') { %>
+                        <div class="product-card">
+                            <div class="product-img">Product Image</div>
+                            <div class="product-info">
+                                <div class="product-name"><%= product.product_name %></div>
+                                <div class="product-price">Rs <%= product.price %></div>
+                                <div class="add-to-cart-section">
+                                    <input type="number" id="qty-<%= product.id %>" min="1" value="1" class="qty-input">
+                                    <button class="btn-add" onclick="addToCart(<%= product.id %>, <%= product.price %>)">Add</button>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                <% }); %>
+            </div>
+        <% } %>
+    </div>
+
+    <script>
+        function addToCart(productId, price) {
+            const quantity = parseInt(document.getElementById('qty-' + productId).value);
+            
+            if (quantity < 1) {
+                alert('Please enter valid quantity');
+                return;
+            }
+            
+            fetch('/user/cart/add', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, quantity })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product added to cart!');
+                    document.getElementById('qty-' + productId).value = 1;
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => {
+                alert('Error adding to cart');
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>

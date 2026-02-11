@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Status - User</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .header-right { display: flex; gap: 15px; }
+        .header-right a {
+            color: white; text-decoration: none; padding: 8px 15px;
+            background: rgba(255,255,255,0.2); border-radius: 4px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #2c3e50; margin-bottom: 30px; }
+        .order-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .order-number { font-weight: bold; color: #667eea; }
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-confirmed { background: #d4edda; color: #155724; }
+        .status-cancelled { background: #f8d7da; color: #721c24; }
+        .order-items {
+            margin-bottom: 15px;
+        }
+        .item-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 10px 0;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        .item-row:last-child { border-bottom: none; }
+        .order-total {
+            text-align: right;
+            padding-top: 15px;
+            border-top: 2px solid #ecf0f1;
+            font-weight: bold;
+            font-size: 18px;
+            color: #667eea;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .no-orders {
+            background: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h2>Order Status</h2>
+        </div>
+        <div class="header-right">
+            <a href="/user/dashboard">Home</a>
+            <span>Welcome <%= name %></span>
+            <a href="/logout">LogOut</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/user/dashboard" class="back-btn">← Back to Dashboard</a>
+
+        <% if (orders && orders.length > 0) { %>
+            <% orders.forEach(order => { %>
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-number">Order: <%= order.order_number %></div>
+                            <div style="color: #7f8c8d; font-size: 12px;">
+                                <%= new Date(order.created_at).toLocaleString() %>
+                            </div>
+                        </div>
+                        <div>
+                            <div style="color: #7f8c8d; margin-bottom: 5px;">Vendor: <strong><%= order.vendor_name %></strong></div>
+                            <span class="order-status status-<%= order.order_status.toLowerCase() %>">
+                                <%= order.order_status %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="order-items">
+                        <div class="item-row" style="font-weight: bold; color: #7f8c8d;">
+                            <div>Product</div>
+                            <div>Qty</div>
+                            <div>Price</div>
+                            <div>Total</div>
+                        </div>
+                        <% order.items.forEach(item => { %>
+                            <div class="item-row">
+                                <div><%= item.product_name %></div>
+                                <div><%= item.quantity %></div>
+                                <div>₹<%= parseFloat(item.unit_price).toFixed(2) %></div>
+                                <div>₹<%= parseFloat(item.total_price).toFixed(2) %></div>
+                            </div>
+                        <% }); %>
+                    </div>
+
+                    <div class="order-total">
+                        Total Amount: ₹<%= parseFloat(order.total_amount).toFixed(2) %>
+                    </div>
+                </div>
+            <% }); %>
+        <% } else { %>
+            <div class="no-orders">
+                <h3>No Orders Yet</h3>
+                <p>You haven't placed any orders. <a href="/user/vendors" style="color: #667eea;">Start shopping</a></p>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

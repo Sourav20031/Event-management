@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Membership - Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .header-right { display: flex; gap: 15px; }
+        .header-right a {
+            color: white; text-decoration: none; padding: 8px 15px;
+            background: rgba(255,255,255,0.2); border-radius: 4px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+        .content {
+            background: white; padding: 30px; border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c3e50; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label {
+            display: block; margin-bottom: 8px; font-weight: 500;
+            color: #444;
+        }
+        select {
+            width: 100%; padding: 10px; border: 1px solid #ddd;
+            border-radius: 4px; font-size: 14px;
+        }
+        select:focus {
+            outline: none; border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .radio-group {
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .radio-group label {
+            display: flex; align-items: center; gap: 10px;
+            margin: 0; font-weight: normal; cursor: pointer;
+        }
+        input[type="radio"] {
+            width: auto; cursor: pointer;
+        }
+        .error { color: #e74c3c; font-size: 12px; margin-top: 5px; }
+        .message {
+            padding: 15px; border-radius: 4px; margin-bottom: 20px;
+        }
+        .message.error {
+            background: #f8d7da; color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .btn-group {
+            display: flex; gap: 10px; margin-top: 25px;
+        }
+        button {
+            flex: 1; padding: 12px; border: none;
+            border-radius: 4px; font-weight: 500;
+            cursor: pointer; transition: background 0.3s;
+        }
+        .btn-submit {
+            background: #3498db; color: white;
+        }
+        .btn-submit:hover { background: #2980b9; }
+        .btn-reset {
+            background: #95a5a6; color: white;
+        }
+        .btn-reset:hover { background: #7f8c8d; }
+        .back-btn {
+            display: inline-block; margin-bottom: 20px;
+            padding: 8px 15px; background: #666;
+            color: white; text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Add Membership</h2>
+        <div class="header-right">
+            <a href="/admin/dashboard">Home</a>
+            <a href="/logout">LogOut</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/admin/maintenance-menu" class="back-btn">← Back</a>
+
+        <div class="content">
+            <h1>Add Membership for Vendor</h1>
+
+            <% if (typeof message !== 'undefined' && message) { %>
+                <div class="message <%= messageType %>"><%= message %></div>
+            <% } %>
+
+            <form method="POST" action="/admin/add-membership" id="addMembershipForm">
+                
+                <div class="form-group">
+                    <label for="vendor">Select Vendor *</label>
+                    <select id="vendor" name="vendor_id" required>
+                        <option value="">-- Select Vendor --</option>
+                        <% vendors.forEach(vendor => { %>
+                            <option value="<%= vendor.id %>">
+                                <%= vendor.vendor_name %> (<%= vendor.category %>)
+                            </option>
+                        <% }); %>
+                    </select>
+                    <span class="error" id="vendorError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label>Membership Duration (Default: 6 months) *</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="membershipDuration" value="6_months" checked required>
+                            6 Months (Default)
+                        </label>
+                        <label>
+                            <input type="radio" name="membershipDuration" value="1_year">
+                            1 Year
+                        </label>
+                        <label>
+                            <input type="radio" name="membershipDuration" value="2_years">
+                            2 Years
+                        </label>
+                    </div>
+                    <span class="error" id="durationError"></span>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-submit">Add Membership</button>
+                    <button type="reset" class="btn-reset">Clear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('addMembershipForm').addEventListener('submit', function(e) {
+            let valid = true;
+            document.querySelectorAll('.error').forEach(el => el.textContent = '');
+            
+            if (!document.getElementById('vendor').value) {
+                document.getElementById('vendorError').textContent = 'Please select a vendor';
+                valid = false;
+            }
+            
+            if (!document.querySelector('input[name="membershipDuration"]:checked')) {
+                document.getElementById('durationError').textContent = 'Please select a duration';
+                valid = false;
+            }
+            
+            if (!valid) e.preventDefault();
+        });
+    </script>
+</body>
+</html>

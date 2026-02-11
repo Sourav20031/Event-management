@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Event Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .header p {
+            color: #7f8c8d;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+        .message {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .hidden {
+            display: none;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-submit {
+            background: #3498db;
+            color: white;
+        }
+        .btn-submit:hover {
+            background: #2980b9;
+        }
+        .btn-reset {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+        .btn-reset:hover {
+            background: #bdc3c7;
+        }
+        .link-back {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .link-back a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .link-back a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Event Management System</h1>
+            <p>Create New Account</p>
+        </div>
+
+        <% if (typeof message !== 'undefined' && message) { %>
+            <div class="message <%= messageType || 'error' %>"><%= message %></div>
+        <% } %>
+
+        <form method="POST" action="/register" id="signupForm">
+            
+            <div class="form-group">
+                <label for="user-role">Sign up as: *</label>
+                <select id="user-role" name="role" onchange="updateForm()" required>
+                    <option value="">-- Select Role --</option>
+                    <option value="User"<% if (typeof formData !== 'undefined' && formData.role === 'User') { %> selected<% } %>>User</option>
+                    <option value="Vendor"<% if (typeof formData !== 'undefined' && formData.role === 'Vendor') { %> selected<% } %>>Vendor</option>
+                </select>
+                <span class="error" id="roleError"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Full Name *</label>
+                <input type="text" id="name" name="name" value="<% if (typeof formData !== 'undefined' && formData.name) { %><%= formData.name %><% } %>" required>
+                <span class="error" id="nameError"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email *</label>
+                <input type="email" id="email" name="email" value="<% if (typeof formData !== 'undefined' && formData.email) { %><%= formData.email %><% } %>" required>
+                <span class="error" id="emailError"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="user-id">User ID (4-20 characters) *</label>
+                <input type="text" id="user-id" name="user_id" value="<% if (typeof formData !== 'undefined' && formData.user_id) { %><%= formData.user_id %><% } %>" required>
+                <span class="error" id="userIdError"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password (Min 8 chars, 1 uppercase, 1 number) *</label>
+                <input type="password" id="password" name="password" required>
+                <span class="error" id="passwordError"></span>
+            </div>
+
+            <!-- Vendor-specific fields -->
+            <div id="vendor-fields" class="hidden">
+                <div class="form-group">
+                    <label for="category">Service Category *</label>
+                    <select id="category" name="category">
+                        <option value="">-- Select Category --</option>
+                        <option value="Catering"<% if (typeof formData !== 'undefined' && formData.category === 'Catering') { %> selected<% } %>>Catering</option>
+                        <option value="Florist"<% if (typeof formData !== 'undefined' && formData.category === 'Florist') { %> selected<% } %>>Florist</option>
+                        <option value="Decoration"<% if (typeof formData !== 'undefined' && formData.category === 'Decoration') { %> selected<% } %>>Decoration</option>
+                        <option value="Lighting"<% if (typeof formData !== 'undefined' && formData.category === 'Lighting') { %> selected<% } %>>Lighting</option>
+                    </select>
+                    <span class="error" id="categoryError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Contact Phone (10 digits) *</label>
+                    <input type="tel" id="phone" name="phone" value="<% if (typeof formData !== 'undefined' && formData.phone) { %><%= formData.phone %><% } %>" pattern="[0-9]{10}">
+                    <span class="error" id="phoneError"></span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button type="submit" class="btn-submit">Sign Up</button>
+                <button type="reset" class="btn-reset">Clear</button>
+            </div>
+        </form>
+
+        <div class="link-back">
+            <p>Already have an account? <a href="/login">Login Here</a></p>
+        </div>
+    </div>
+
+    <script>
+        function updateForm() {
+            const role = document.getElementById('user-role').value;
+            const vendorFields = document.getElementById('vendor-fields');
+            
+            if (role === 'Vendor') {
+                vendorFields.classList.remove('hidden');
+                document.getElementById('category').required = true;
+                document.getElementById('phone').required = true;
+            } else {
+                vendorFields.classList.add('hidden');
+                document.getElementById('category').required = false;
+                document.getElementById('phone').required = false;
+            }
+        }
+
+        // Initialize on page load
+        if (document.getElementById('user-role').value === 'Vendor') {
+            updateForm();
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            let valid = true;
+            document.querySelectorAll('.error').forEach(el => el.textContent = '');
+            
+            // Validate role
+            if (!document.getElementById('user-role').value) {
+                document.getElementById('roleError').textContent = 'Please select a role';
+                valid = false;
+            }
+            
+            // Validate name
+            if (!document.getElementById('name').value.trim()) {
+                document.getElementById('nameError').textContent = 'Name is required';
+                valid = false;
+            }
+            
+            // Validate email
+            const email = document.getElementById('email').value;
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                document.getElementById('emailError').textContent = 'Valid email required';
+                valid = false;
+            }
+            
+            // Validate User ID
+            const userId = document.getElementById('user-id').value;
+            if (!userId || !/^[a-zA-Z0-9_]{4,20}$/.test(userId)) {
+                document.getElementById('userIdError').textContent = 'User ID must be 4-20 alphanumeric characters';
+                valid = false;
+            }
+            
+            // Validate password
+            const password = document.getElementById('password').value;
+            if (!password || !/^(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/.test(password)) {
+                document.getElementById('passwordError').textContent = 'Min 8 chars, 1 uppercase, 1 number required';
+                valid = false;
+            }
+            
+            // Validate vendor fields
+            if (document.getElementById('user-role').value === 'Vendor') {
+                if (!document.getElementById('category').value) {
+                    document.getElementById('categoryError').textContent = 'Category is required';
+                    valid = false;
+                }
+                const phone = document.getElementById('phone').value;
+                if (!phone || !/^\d{10}$/.test(phone)) {
+                    document.getElementById('phoneError').textContent = 'Valid 10-digit phone required';
+                    valid = false;
+                }
+            }
+            
+            if (!valid) e.preventDefault();
+        });
+    </script>
+</body>
+</html>

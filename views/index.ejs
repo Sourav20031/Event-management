@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index - Event Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 0;
+        }
+        header .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header-right a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            margin-left: 10px;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .header-right a:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        .btn {
+            padding: 12px 30px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.3s;
+        }
+        .btn-primary {
+            background: white;
+            color: #667eea;
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .feature-card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Event Management System</div>
+            <div class="header-right">
+                <% if (isAuthenticated) { %>
+                    <span style="margin-right: 20px;">Welcome, <%= userName %></span>
+                    <a href="/logout">LogOut</a>
+                <% } else { %>
+                    <a href="/login">Login</a>
+                    <a href="/signup">Sign Up</a>
+                <% } %>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>Event Management System</h1>
+        <p>Manage events seamlessly with our comprehensive platform</p>
+        <% if (!isAuthenticated) { %>
+            <div class="hero-buttons">
+                <a href="/login" class="btn btn-primary">Login</a>
+                <a href="/signup" class="btn btn-secondary">Sign Up</a>
+            </div>
+        <% } else { %>
+            <div class="hero-buttons">
+                <% if (userRole === 'Admin') { %>
+                    <a href="/admin/dashboard" class="btn btn-primary">Admin Dashboard</a>
+                <% } else if (userRole === 'Vendor') { %>
+                    <a href="/vendor/dashboard" class="btn btn-primary">Vendor Dashboard</a>
+                <% } else { %>
+                    <a href="/user/dashboard" class="btn btn-primary">User Dashboard</a>
+                <% } %>
+            </div>
+        <% } %>
+    </div>
+
+    <div class="container">
+        <div class="features">
+            <div class="feature-card">
+                <h3>🏢 For Admins</h3>
+                <p>Manage vendors, handle membership subscriptions, and oversee all transactions in the system.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎯 For Vendors</h3>
+                <p>Add and manage your products/services, track orders, and grow your event services business.</p>
+            </div>
+            <div class="feature-card">
+                <h3>🎉 For Users</h3>
+                <p>Browse vendors, add items to cart, manage guest lists, and place orders easily.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Event Management System. All rights reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Successful</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            text-align: center;
+        }
+        .success-icon {
+            font-size: 60px;
+            color: #27ae60;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        p {
+            color: #7f8c8d;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        .info-box {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 4px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .info-box p {
+            margin-bottom: 10px;
+        }
+        .info-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        .info-value {
+            color: #3498db;
+            font-family: monospace;
+        }
+        .btn-link {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+        .btn-link:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-icon">✓</div>
+        <h1>Registration Successful!</h1>
+        <p>Your account has been created successfully.</p>
+        
+        <div class="info-box">
+            <p><span class="info-label">User ID:</span> <span class="info-value"><%= user_id %></span></p>
+            <p><span class="info-label">Role:</span> <span class="info-value"><%= role %></span></p>
+            <p><span class="info-label">Status:</span> <span class="info-value">Active</span></p>
+        </div>
+
+        <p>You can now login with your User ID and password.</p>
+        <p style="font-size: 12px;">Please keep your credentials secure and do not share them with anyone.</p>
+
+        <a href="/login" class="btn-link">Proceed to Login</a>
+    </div>
+</body>
+</html>

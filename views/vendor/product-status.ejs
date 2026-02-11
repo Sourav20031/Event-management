@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Status - Vendor</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .header-right { display: flex; gap: 15px; }
+        .header-right a {
+            color: white; text-decoration: none; padding: 8px 15px;
+            background: rgba(255,255,255,0.2); border-radius: 4px;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .content {
+            background: white; padding: 30px; border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2c3e50; margin-bottom: 25px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead {
+            background: #34495e;
+            color: white;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        tbody tr:hover {
+            background: #f9f9f9;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status.available {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status.unavailable {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        select {
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            background: #3498db;
+            color: white;
+        }
+        .btn-small:hover {
+            background: #2980b9;
+        }
+        .back-btn { 
+            display: inline-block; margin-bottom: 20px;
+            padding: 8px 15px; background: #666;
+            color: white; text-decoration: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Product Status</h2>
+        <div class="header-right">
+            <a href="/vendor/dashboard">Home</a>
+            <a href="/logout">LogOut</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/vendor/dashboard" class="back-btn">← Back</a>
+
+        <div class="content">
+            <h1>Product Status</h1>
+
+            <% if (products.length === 0) { %>
+                <p style="text-align: center; color: #7f8c8d; padding: 40px 0;">No products found.</p>
+            <% } else { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Price (Rs)</th>
+                            <th>Current Status</th>
+                            <th>Change Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% products.forEach(product => { %>
+                            <tr id="row-<%= product.id %>">
+                                <td><%= product.product_name %></td>
+                                <td>Rs <%= product.price %></td>
+                                <td>
+                                    <span class="status <%= product.status === 'Available' ? 'available' : 'unavailable' %>">
+                                        <%= product.status %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <select id="status-<%= product.id %>" class="status-select">
+                                        <option value="Available" <% if(product.status === 'Available') { %>selected<% } %>>Available</option>
+                                        <option value="Unavailable" <% if(product.status === 'Unavailable') { %>selected<% } %>>Unavailable</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button class="btn-small" onclick="updateStatus('<%= product.id %>')">Update</button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            <% } %>
+        </div>
+    </div>
+
+    <script>
+        function updateStatus(productId) {
+            const newStatus = document.getElementById('status-' + productId).value;
+            
+            fetch('/vendor/update-product-status', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ productId, status: newStatus })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the status badge
+                    const statusBadge = document.querySelector(`#row-${productId} .status`);
+                    statusBadge.classList.remove('available', 'unavailable');
+                    statusBadge.classList.add(newStatus === 'Available' ? 'available' : 'unavailable');
+                    statusBadge.textContent = newStatus;
+                    alert('Status updated successfully');
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(err => {
+                alert('Error updating status');
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>
